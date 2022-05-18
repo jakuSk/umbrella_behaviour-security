@@ -1,10 +1,11 @@
-import requests
 import sys
+import requests
 
 from services.config_service import ConfigService
 
 
 class UmbrellaReportingService:
+    """Class to manage data from Umbrella reporting service"""
     def __init__(self, key: str, secret: str, config_service: ConfigService):
         self.__config = config_service
         self.__api_report_token = self.__get_token(key, secret, config_service)
@@ -25,7 +26,7 @@ class UmbrellaReportingService:
 
         token = token_request.json().get('access_token')
 
-        if token == None:
+        if token is None:
             print("Auth_token not found. Exiting...")
             sys.exit(101)
         else:
