@@ -24,5 +24,10 @@
                 63
             ]
         }
+    },
+    "database": {
+        "connection_string": "postgresql+psycopg2://{db_user}:{db_pass}@localhost:5432/radius",
+        "user": "python_radius",
+        "users_table": "users_identity"
     }
 }

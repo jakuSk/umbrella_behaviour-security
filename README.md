@@ -11,14 +11,53 @@
 
 ## Requirements
 
+### Python packages (pip)
+
+Install pip requirements file `pip install -r src/requirements.txt`
+
+1. psycopg2 - PostgreSQL driver
+1. sqlalchemy - Database toolkit for python
+
+### Software
+
+1. PostgreSQL
+
+This application has been teseted with PostgreSQL 12.
+
+Table users_identity must be created.
+```sql
+CREATE TABLE public.users_identity
+(
+    id serial NOT NULL,
+    radcheck_id integer NOT NULL,
+    umbrella_label character varying(32) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.users_identity
+    OWNER to radius;
+
+ALTER TABLE IF EXISTS public.users_identity
+    ADD CONSTRAINT radcheck_id FOREIGN KEY (radcheck_id)
+    REFERENCES public.radcheck (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    NOT VALID;
+```
+
 ## Steps - Score calculation
 
 ### Load configuration file
 
+#### Secrets
+
+1. `umb_reporting_key` - Generated key for umbrella reporting
+1. `umb_reporting_secret` - Generated secret for umbrella reporting
+1. `db_pass` - Database password
+
 #### Load umbrella key and secret stored in sysenv
 
-Secrets are named by default as `umb_reporting_key` and `umb_reporting_secret`.
-
+Method get_secrets to get secrets for cisco Umbrella
 ```python
 def get_secrets(key, secret) -> (str, str):
     try:
@@ -82,3 +121,8 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 |100| unknown exceptions|
 |101| failed to obtain bearer token|
 |102| Non 2XX status code on API call|
+
+
+
+## TODOs:
+1. Foreign key in db
