@@ -10,6 +10,8 @@ def main():
     config_service = ConfigService(config_name='config.json')
     key, secret = get_secrets('umb_reporting_key', 'umb_reporting_secret')
 
+    umbrella_service = UmbrellaReportingService(key, secret, config_service)
+    umbrella_service.get_report_for_user('user')
 
 def get_secrets(key, secret) -> (str, str):
     try:

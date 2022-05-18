@@ -30,3 +30,34 @@ class UmbrellaReportingService:
             sys.exit(101)
         else:
             return(token)
+
+    def get_report_for_user(self, user: str) -> dict:
+        """Method to get report for user"""
+        url = self.__config.get_value('umbrella:urls:reports')
+        url += self.__config.get_value('umbrella:reports:report_query')
+
+        url = url.replace('{organization_id}', self.__config.get_value(
+            property_path='umbrella:reports:organization_id'))
+        query_categories = self.__config.get_value(
+            'umbrella:reports:query_categories')
+
+        categories_string = ''
+        for category in query_categories:
+            categories_string += f'{category},'
+
+        l = len(categories_string)
+        query_categories = categories_string[:l-1]
+
+        url = url.replace('{query_categories}', query_categories)
+
+        headers = {'Authorization': 'Bearer ' + self.__api_report_token,
+                   'Accept': 'application/json'}
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            print(f'Non 200 status code - {response.status_code} on dns report api.')
+            print(response.json())
+            sys.exit(102)
+
+        return response.json()
