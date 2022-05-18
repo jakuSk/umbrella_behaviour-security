@@ -1,0 +1,28 @@
+{
+    "umbrella": {
+        "urls": {
+            "auth": "https://management.api.umbrella.com/auth/v2/oauth2/token",
+            "reports": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/activity/dns"
+        },
+        "reports": {
+            "organization_id": "7966517",
+            "report_query": "?from=-30days&to=now&limit=5000&categories={query_categories}",
+            "query_categories": [
+                65,
+                62,
+                110,
+                60,
+                106,
+                108,
+                109,
+                150,
+                61,
+                64,
+                66,
+                68,
+                67,
+                63
+            ]
+        }
+    }
+}
