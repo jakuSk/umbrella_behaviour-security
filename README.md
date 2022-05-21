@@ -108,7 +108,7 @@ If user isn't on whitelist, save result
 
 ### Usage
 
-`./whitelist.py --user <username>`
+`./whitelist.py -u <username>`
 
 ### Description
 

@@ -21,14 +21,7 @@ class UmbrellaReportingService:
         token_request = requests.post(
             url, headers=headers, auth=requests.auth.HTTPBasicAuth(key, secret))
 
-        print(key)
-        print(secret)
-        print(url)
-        print(token_request)
-        print(token_request.status_code)
-
         token = token_request.json().get('access_token')
-        print(token)
 
         if token is None:
             print("Auth_token not found. Exiting...")
@@ -93,7 +86,6 @@ class UmbrellaReportingService:
 
         headers = {'Authorization': 'Bearer ' + self.__api_report_token,
                    'Accept': 'application/json'}
-        print(url)
         response = requests.get(url, headers=headers)
 
         if response.status_code != 200:

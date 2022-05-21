@@ -35,7 +35,6 @@ def main():
             domain_list.append(umbrella_service.get_investigate_data(domain))
         
         risk_score = risk_score_calculation.calculate_risk_score(domain_list)
-        print(f'{risk_score} for user {users[x][0]}')
         db_service.update_users_group(users[x][0], risk_score)
 
     t2 = time.perf_counter()
