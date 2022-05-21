@@ -31,6 +31,7 @@ CREATE TABLE public.users_identity
     id serial NOT NULL,
     radcheck_id integer NOT NULL,
     umbrella_label character varying(32) NOT NULL,
+    whitelist_from date,
     PRIMARY KEY (id)
 );
 

@@ -17,7 +17,7 @@
         },
         "reports": {
             "organization_id": "7966517",
-            "query_parameters":{
+            "query_parameters": {
                 "from": "-30days",
                 "to": "now",
                 "limit": "5000",
@@ -44,9 +44,12 @@
     "database": {
         "connection_string": "postgresql+psycopg2://{db_user}:{db_pass}@localhost:5432/radius",
         "user": "python_radius",
-        "users_table": "users_identity"
+        "users_table": "users_identity",
+        "whitelist_lenght_in_days": "7"
     },
-    "vpn_groups":{
-        
-    }
+    "vpn_groups": [
+        "Safe",
+        "Problematic",
+        "Dangerous"
+    ]
 }
