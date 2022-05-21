@@ -1,6 +1,4 @@
 import os
-from curses import meta
-from time import time
 import sqlalchemy as db
 
 from services.config_service import ConfigService
@@ -35,7 +33,7 @@ class DatabaseService:
         """Method to get users labels as string"""
         return_string = ''
 
-        for identity_id, label in identities_dict.items():
+        for identity_id in identities_dict.items():
             return_string += f'\'{identity_id}\','
 
         return return_string[:-1]
@@ -61,7 +59,8 @@ class DatabaseService:
         return return_list
 
     def update_users_group(self, username, risk_score):
-        vpn_groups:list = self.__config.get_value('vpn_groups')
+        """Updates users 'ASA-Member-Of' in the radreply table"""
+        vpn_groups: list = self.__config.get_value('vpn_groups')
 
         if risk_score >= 55:
             group = vpn_groups[2]
@@ -69,7 +68,7 @@ class DatabaseService:
             group = vpn_groups[1]
         else:
             group = vpn_groups[0]
-            
+
         query = f'''UPDATE radreply rg
                     SET value = \'{group}\'
                     WHERE rg.username = \'{username}\'

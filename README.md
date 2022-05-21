@@ -1,13 +1,23 @@
 # umbrella_behaviour-security
 
-1. [Requirements](#requirements)
-1. [Steps - Score calculation](#steps---score-calculation)
-    1. [Load configuration file](#load-configuration-file)
-        1. [Load umbrella key and secret stored in sysenv](#load-umbrella-key-and-secret-stored-in-sysenv)
-    1. [Load information for VPN users](#load-configuration-file)
-    1. [Load data from Cisco Umbrella for VPN Users](#load-configuration-file)
-    1. [Calculate risk score](#calculate-risk-score)
-    1. [Save result into database](#save-result-into-database)
+- [umbrella_behaviour-security](#umbrella_behaviour-security)
+  - [Requirements](#requirements)
+    - [Python packages (pip)](#python-packages-pip)
+    - [Software](#software)
+  - [Steps - Score calculation](#steps---score-calculation)
+    - [Load configuration file](#load-configuration-file)
+      - [Secrets](#secrets)
+      - [Load umbrella key and secret stored in sysenv](#load-umbrella-key-and-secret-stored-in-sysenv)
+    - [Load information for VPN users](#load-information-for-vpn-users)
+    - [Load data from Cisco Umbrella for VPN Users](#load-data-from-cisco-umbrella-for-vpn-users)
+      - [Security categories](#security-categories)
+    - [Calculate risk score](#calculate-risk-score)
+    - [Save result into database](#save-result-into-database)
+  - [Steps - Whitelisting script](#steps---whitelisting-script)
+    - [Usage](#usage)
+    - [Description](#description)
+  - [Exit codes](#exit-codes)
+  - [TODOs:](#todos)
 
 ## Requirements
 
@@ -81,22 +91,22 @@ def get_secrets(key, secret) -> (str, str):
 
 Security categories can be obtained from `help_script/get_categories.py`
 
-| id | label |
-|-----|-----|
-|65|Command and Control|
-|62|Mobile Threats|
-|110|DNS Tunneling VPN|
-|60|Drive-by Downloads/Exploits|
-|106|Unauthorized IP Tunnel Access|
-|108|Newly Seen Domains|
-|109|Potentially Harmful|
-|150|Cryptomining|
-|61|Dynamic DNS|
-|64|Command and Control|
-|66|Malware|
-|68|Phishing|
-|67|Malware|
-|63|High Risk Sites and Locations|
+| id  | label                         |
+| --- | ----------------------------- |
+| 65  | Command and Control           |
+| 62  | Mobile Threats                |
+| 110 | DNS Tunneling VPN             |
+| 60  | Drive-by Downloads/Exploits   |
+| 106 | Unauthorized IP Tunnel Access |
+| 108 | Newly Seen Domains            |
+| 109 | Potentially Harmful           |
+| 150 | Cryptomining                  |
+| 61  | Dynamic DNS                   |
+| 64  | Command and Control           |
+| 66  | Malware                       |
+| 68  | Phishing                      |
+| 67  | Malware                       |
+| 63  | High Risk Sites and Locations |
 
 ### Calculate risk score
 
@@ -117,11 +127,11 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 
 ## Exit codes
 
-| exit code | reason |
-|:-|-|
-|100| unknown exceptions|
-|101| failed to obtain bearer token|
-|102| Non 2XX status code on API call|
+| exit code | reason                          |
+| :-------- | ------------------------------- |
+| 100       | unknown exceptions              |
+| 101       | failed to obtain bearer token   |
+| 102       | Non 2XX status code on API call |
 
 
 
