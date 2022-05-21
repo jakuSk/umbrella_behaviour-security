@@ -2,11 +2,26 @@
     "umbrella": {
         "urls": {
             "auth": "https://management.api.umbrella.com/auth/v2/oauth2/token",
-            "reports": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/activity/dns"
+            "reports": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/activity/dns",
+            "identities": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/top-identities"
+        },
+        "identities": {
+            "organization_id": "7966517",
+            "query_parameters": {
+                "from": "-30days",
+                "to": "now",
+                "limit": "100",
+                "offset": "0"
+            }
         },
         "reports": {
             "organization_id": "7966517",
-            "report_query": "?from=-30days&to=now&limit=5000&categories={query_categories}",
+            "query_parameters":{
+                "from": "-30days",
+                "to": "now",
+                "limit": "5000",
+                "offset": "0"
+            },
             "query_categories": [
                 65,
                 62,

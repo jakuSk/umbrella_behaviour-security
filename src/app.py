@@ -20,7 +20,6 @@ def main():
     for user in user_list:
         print(umbrella_service.get_report_for_user(user[1]))
 
-
 def get_secrets(key, secret) -> (str, str):
     """Method to get the secrets from the environment variables."""
     try:

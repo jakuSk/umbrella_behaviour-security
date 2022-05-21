@@ -25,6 +25,7 @@ class UmbrellaReportingService:
         print(token_request.status_code)
 
         token = token_request.json().get('access_token')
+        print(token)
 
         if token is None:
             print("Auth_token not found. Exiting...")
@@ -32,13 +33,37 @@ class UmbrellaReportingService:
         else:
             return(token)
 
+    def __add_query_string(self, property_path: str) -> str:
+        """Method to add query_parameters to url"""
+        query_parameters = self.__config.get_value(property_path)
+        query_string = '?'
+
+        for key, value in query_parameters.items():
+            query_string += f'{key}={value}&'
+
+        return query_string[:-1]
+
+
+    def get_identites(self) -> list:
+        """Method to get identities"""
+        url = self.__config.get_value('umbrella:urls:identities')
+
+        url = url.replace('{organization_id}', self.__config.get_value(
+            property_path='umbrella:identities:organization_id'))
+
+        categories_string = ''
+        for category in query_categories:
+            pass
+
     def get_report_for_user(self, user: str) -> dict:
         """Method to get report for user"""
         url = self.__config.get_value('umbrella:urls:reports')
-        url += self.__config.get_value('umbrella:reports:report_query')
 
         url = url.replace('{organization_id}', self.__config.get_value(
             property_path='umbrella:reports:organization_id'))
+
+        url += self.__add_query_string('umbrella:reports:query_parameters')
+
         query_categories = self.__config.get_value(
             'umbrella:reports:query_categories')
 
@@ -48,12 +73,13 @@ class UmbrellaReportingService:
 
         l = len(categories_string)
         query_categories = categories_string[:l-1]
+        url+= "&categories=" + query_categories
 
         url = url.replace('{query_categories}', query_categories)
 
         headers = {'Authorization': 'Bearer ' + self.__api_report_token,
                    'Accept': 'application/json'}
-
+        print(url)
         response = requests.get(url, headers=headers)
 
         if response.status_code != 200:
