@@ -1,5 +1,7 @@
+import os
 import sys
 import requests
+import time
 
 from services.config_service import ConfigService
 
@@ -101,3 +103,44 @@ class UmbrellaReportingService:
             sys.exit(102)
 
         return response.json()
+
+    def process_dns_queries(self, report_data: dict, ) -> dict:
+        """We have to parse domain, category and internal IP"""
+        data_objects = report_data['data']
+        return_dict = {}
+
+        # Iterate through the dictionary of domains and check if the analyzed dns query fits our risk category
+        for dns_log in data_objects:
+            return_dict[dns_log['domain']] = None
+
+        return return_dict
+
+    def __is_id_on_list(self, id: int, list_to_search: list) -> bool:
+        """Simple method to iterate through the list and find a matching ID. Here it is used to find if dns query fits our category"""
+        for id_on_list in list_to_search:
+            if id_on_list == id:
+                return True
+
+        return False
+
+    def get_investigate_data(self, domain: str) -> dict:
+        """Get data from Investigate API. Returns dict with risk_score value"""
+        return_dict = {}
+        return_dict['domain'] = domain
+        api_token = os.environ['umb_investigate_token']
+        url = self.__config.get_value('umbrella:urls:investigate') + domain
+        api_headers = {}
+        api_headers['Authorization'] = f'Bearer {api_token}'
+        api_headers['Accept'] = 'application/json'
+
+        response = requests.get(url, headers=api_headers, verify=True)
+        if response.status_code != 200:
+            print(
+                f'Non 200 status code - {response.status_code} on investigate api.')
+            print(response.json())
+            sys.exit(1)
+
+        # Here we add the risk_score for the domain into out return_dict
+        return_dict['risk_score'] = response.json()['risk_score']
+
+        return return_dict

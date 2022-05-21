@@ -5,21 +5,28 @@ import sqlalchemy as db
 
 from services.config_service import ConfigService
 
+
 class DatabaseService:
     """Class to managa data from database"""
+
     def __init__(self, config_service: ConfigService):
         db_user = config_service.get_value('database:user')
-        connection_string = config_service.get_value('database:connection_string')
+        connection_string = config_service.get_value(
+            'database:connection_string')
 
         connection_string = connection_string.replace('{db_user}', db_user)
-        connection_string = connection_string.replace('{db_pass}', os.environ['db_pass'])
+        connection_string = connection_string.replace(
+            '{db_pass}', os.environ['db_pass'])
 
         self.__engine = db.create_engine(connection_string)
         self.__connection = self.__engine.connect()
         self.__metadata = db.MetaData()
-        self.__users_table = db.Table('users_identity', self.__metadata, autoload=True, autoload_with=self.__engine)
-        self.__radcheck = db.Table('radcheck', self.__metadata, autoload=True, autoload_with=self.__engine)
-        self.__radgroupreply = db.Table('radgroupreply', self.__metadata, autoload=True, autoload_with=self.__engine)
+        self.__users_table = db.Table(
+            'users_identity', self.__metadata, autoload=True, autoload_with=self.__engine)
+        self.__radcheck = db.Table(
+            'radcheck', self.__metadata, autoload=True, autoload_with=self.__engine)
+        self.__radgroupreply = db.Table(
+            'radgroupreply', self.__metadata, autoload=True, autoload_with=self.__engine)
 
     def __get_users_labels_as_string(self, identities_dict) -> str:
         """Method to get users labels as string"""
@@ -40,12 +47,14 @@ class DatabaseService:
             WHERE ui.umbrella_label IN ({labels});'''
 
         print(query)
-
         users_query_result = self.__connection.execute(query).fetchall()
-        
+        print(users_query_result)
+
         return_list = []
 
         for user in users_query_result:
-            return_list.append((user['username'], user['umbrella_label'], identities_dict[user['umbrella_label']]))
+            return_list.append((user['username'],
+                                user['umbrella_label'],
+                                identities_dict[user['umbrella_label']]))
 
         return return_list

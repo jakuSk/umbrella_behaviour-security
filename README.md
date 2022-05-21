@@ -125,5 +125,4 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 
 
 ## TODOs:
-1. ampersand at end of url
 1. add radius ddl to docs

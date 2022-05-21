@@ -3,7 +3,8 @@
         "urls": {
             "auth": "https://management.api.umbrella.com/auth/v2/oauth2/token",
             "reports": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/activity/dns",
-            "identities": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/top-identities"
+            "identities": "https://reports.api.umbrella.com/v2/organizations/{organization_id}/top-identities",
+            "investigate": "https://investigate.api.umbrella.com/domains/risk-score/"
         },
         "identities": {
             "organization_id": "7966517",
@@ -44,5 +45,8 @@
         "connection_string": "postgresql+psycopg2://{db_user}:{db_pass}@localhost:5432/radius",
         "user": "python_radius",
         "users_table": "users_identity"
+    },
+    "vpn_groups":{
+        
     }
 }
