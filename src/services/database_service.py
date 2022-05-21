@@ -33,7 +33,7 @@ class DatabaseService:
         """Method to get users labels as string"""
         return_string = ''
 
-        for identity_id in identities_dict.items():
+        for identity_id, label in identities_dict.items():
             return_string += f'\'{identity_id}\','
 
         return return_string[:-1]

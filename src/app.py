@@ -25,20 +25,24 @@ def main():
     users = db_service.get_users_identities(identities_dict)
 
     # Then we get the reports for each user
-    for users_index in enumerate(users):
-        report_data = umbrella_service.get_report_for_user(users[users_index][2])
-        users[users_index] = (users[users_index][0], users[users_index][1], users[users_index][2], report_data)
-        domain_info = umbrella_service.process_dns_queries(report_data=users[users_index][3])
+    for users_index in range(len(users)):
+        report_data = umbrella_service.get_report_for_user(
+            users[users_index][2])
+        users[users_index] = (
+            users[users_index][0], users[users_index][1], users[users_index][2], report_data)
+        domain_info = umbrella_service.process_dns_queries(
+            report_data=users[users_index][3])
 
         domain_list = []
         for domain in domain_info:
             domain_list.append(umbrella_service.get_investigate_data(domain))
-        
+
         risk_score = risk_score_calculation.calculate_risk_score(domain_list)
         db_service.update_users_group(users[users_index][0], risk_score)
 
     t2 = time.perf_counter()
     print(f'Time taken to process {len(users)} users is {t2-t1}')
+
 
 def get_secrets(key, secret) -> (str, str):
     """Method to get the secrets from the environment variables."""
