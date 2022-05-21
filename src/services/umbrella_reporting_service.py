@@ -6,6 +6,7 @@ from services.config_service import ConfigService
 
 class UmbrellaReportingService:
     """Class to manage data from Umbrella reporting service"""
+
     def __init__(self, key: str, secret: str, config_service: ConfigService):
         self.__config = config_service
         self.__api_report_token = self.__get_token(key, secret, config_service)
@@ -43,19 +44,28 @@ class UmbrellaReportingService:
 
         return query_string[:-1]
 
-
-    def get_identites(self) -> list:
+    def get_identites(self) -> dict:
         """Method to get identities"""
         url = self.__config.get_value('umbrella:urls:identities')
 
         url = url.replace('{organization_id}', self.__config.get_value(
             property_path='umbrella:identities:organization_id'))
 
-        categories_string = ''
-        for category in query_categories:
-            pass
+        url += self.__add_query_string('umbrella:identities:query_parameters')
 
-    def get_report_for_user(self, user: str) -> dict:
+        headers = {'Authorization': 'Bearer ' + self.__api_report_token,
+                   'Accept': 'application/json'}
+
+        response = requests.get(url, headers=headers).json()
+
+        return_dict = {}
+
+        for user in response['data']:
+            return_dict[user['identity']['label']] = user['identity']['id']
+
+        return return_dict
+
+    def get_report_for_user(self, identity_id: str) -> dict:
         """Method to get report for user"""
         url = self.__config.get_value('umbrella:urls:reports')
 
@@ -73,9 +83,11 @@ class UmbrellaReportingService:
 
         l = len(categories_string)
         query_categories = categories_string[:l-1]
-        url+= "&categories=" + query_categories
+        url += "&categories=" + query_categories
 
         url = url.replace('{query_categories}', query_categories)
+
+        url += f"&identityids={identity_id}"
 
         headers = {'Authorization': 'Bearer ' + self.__api_report_token,
                    'Accept': 'application/json'}
@@ -83,7 +95,8 @@ class UmbrellaReportingService:
         response = requests.get(url, headers=headers)
 
         if response.status_code != 200:
-            print(f'Non 200 status code - {response.status_code} on dns report api.')
+            print(
+                f'Non 200 status code - {response.status_code} on dns report api.')
             print(response.json())
             sys.exit(102)
 

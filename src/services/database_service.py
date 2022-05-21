@@ -21,15 +21,31 @@ class DatabaseService:
         self.__radcheck = db.Table('radcheck', self.__metadata, autoload=True, autoload_with=self.__engine)
         self.__radgroupreply = db.Table('radgroupreply', self.__metadata, autoload=True, autoload_with=self.__engine)
 
-    def get_users_identities(self) -> list:
+    def __get_users_labels_as_string(self, identities_dict) -> str:
+        """Method to get users labels as string"""
+        return_string = ''
+
+        for identity_id, label in identities_dict.items():
+            return_string += f'\'{identity_id}\','
+
+        return return_string[:-1]
+
+    def get_users_identities(self, identities_dict) -> list:
         """Method to get users identities"""
-        query = '''SELECT rc.username, ui.umbrella_label FROM radcheck rc JOIN users_identity ui ON ui.radcheck_id = rc.id;'''
+        labels = self.__get_users_labels_as_string(identities_dict)
+        query = f'''SELECT rc.username, ui.umbrella_label
+            FROM radcheck rc
+            JOIN users_identity ui
+            ON ui.radcheck_id = rc.id
+            WHERE ui.umbrella_label IN ({labels});'''
+
+        print(query)
 
         users_query_result = self.__connection.execute(query).fetchall()
         
         return_list = []
 
         for user in users_query_result:
-            return_list.append((user['username'], user['umbrella_label']))
+            return_list.append((user['username'], user['umbrella_label'], identities_dict[user['umbrella_label']]))
 
         return return_list

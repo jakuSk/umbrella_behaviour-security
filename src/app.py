@@ -4,7 +4,7 @@ import sys
 
 from services.umbrella_reporting_service import UmbrellaReportingService
 from services.config_service import ConfigService
-from services.database_serivce import DatabaseService
+from services.database_service import DatabaseService
 
 
 def main():
@@ -16,9 +16,15 @@ def main():
     umbrella_service = UmbrellaReportingService(key, secret, config_service)
 
     # Application logic
-    user_list = db_service.get_users_identities()
-    for user in user_list:
-        print(umbrella_service.get_report_for_user(user[1]))
+    # First get active identities from umbrella top-identities API
+    identities_dict = umbrella_service.get_identites()
+    # Then we get the mapping table from db that maps umbrella_label with username
+    users = db_service.get_users_identities(identities_dict)
+
+    # Then we get the reports for each user
+    for identity in users:
+        print(umbrella_service.get_report_for_user(identity[2]))
+
 
 def get_secrets(key, secret) -> (str, str):
     """Method to get the secrets from the environment variables."""
