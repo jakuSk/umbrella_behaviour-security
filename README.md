@@ -125,4 +125,4 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 
 
 ## TODOs:
-1. Foreign key in db
+1. ampersand at end of url
