@@ -15,8 +15,7 @@ def main():
     t1 = time.perf_counter()
     config_service = ConfigService(config_name='config.json')
     db_service = DatabaseService(config_service)
-    key, secret = get_secrets('umb_reporting_key', 'umb_reporting_secret')
-    umbrella_service = UmbrellaReportingService(key, secret, config_service)
+    umbrella_service = UmbrellaReportingService(config_service)
 
     # Application logic
     # First get active identities from umbrella top-identities API
@@ -26,37 +25,28 @@ def main():
 
     # Then we get the reports for each user
     for users_index in range(len(users)):
-        report_data = umbrella_service.get_report_for_user(
-            users[users_index][2])
-        users[users_index] = (
-            users[users_index][0], users[users_index][1], users[users_index][2], report_data)
-        domain_info = umbrella_service.process_dns_queries(
-            report_data=users[users_index][3])
-
-        domain_list = []
-        for domain in domain_info:
-            domain_list.append(umbrella_service.get_investigate_data(domain))
-
-        risk_score = risk_score_calculation.calculate_risk_score(domain_list)
-        db_service.update_users_group(users[users_index][0], risk_score)
+        process_users_activity(umbrella_service, users, users_index, db_service)
 
     t2 = time.perf_counter()
     print(f'Time taken to process {len(users)} users is {t2-t1}')
 
 
-def get_secrets(key, secret) -> (str, str):
-    """Method to get the secrets from the environment variables."""
-    try:
-        key = os.environ[key]
-        secret = os.environ[secret]
-        return key, secret
-    except KeyError as error:
-        print(f'Environment variable {error} not found... Exiting')
-        sys.exit(1)
-    except Exception as error:
-        print(f'Error: {error}')
-        sys.exit(100)
+def process_users_activity(umbrella_service, users, users_index, db_service):
+    """Method to process users activity and save it to the database."""
+    report_data = umbrella_service.get_report_for_user(
+        users[users_index][2])
+    users[users_index] = (
+        users[users_index][0], users[users_index][1], users[users_index][2], report_data)
+    domain_info = umbrella_service.process_dns_queries(
+        report_data=users[users_index][3])
 
+    domain_list = []
+    for domain in domain_info:
+        domain_list.append(umbrella_service.get_investigate_data(domain))
+
+    risk_score = risk_score_calculation.calculate_risk_score(domain_list)
+    db_service.update_users_group(users[users_index][0], risk_score)
+    return risk_score
 
 if __name__ == '__main__':
     main()

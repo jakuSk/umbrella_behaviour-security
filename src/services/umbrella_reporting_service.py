@@ -9,12 +9,14 @@ from services.config_service import ConfigService
 class UmbrellaReportingService:
     """Class to manage data from Umbrella reporting service"""
 
-    def __init__(self, key: str, secret: str, config_service: ConfigService):
+    def __init__(self, config_service: ConfigService):
+        """Initialize the class"""
         self.__config = config_service
-        self.__api_report_token = self.__get_token(key, secret, config_service)
+        self.__api_report_token = self.__get_token(config_service)
 
-    def __get_token(self, key, secret, config_service: ConfigService) -> str:
+    def __get_token(self, config_service: ConfigService) -> str:
         """Method to get autorization token from auth api"""
+        key, secret = self.__get_secrets('umb_reporting_key', 'umb_reporting_secret')
         url = config_service.get_value('umbrella:urls:auth')
         headers = {'Accept': 'application/json'}
 
@@ -28,6 +30,19 @@ class UmbrellaReportingService:
             sys.exit(101)
         else:
             return(token)
+
+    def __get_secrets(self, key, secret) -> (str, str):
+        """Method to get the secrets from the environment variables."""
+        try:
+            key = os.environ[key]
+            secret = os.environ[secret]
+            return key, secret
+        except KeyError as error:
+            print(f'Environment variable {error} not found... Exiting')
+            sys.exit(1)
+        except Exception as error:
+            print(f'Error: {error}')
+            sys.exit(100)
 
     def __add_query_string(self, property_path: str) -> str:
         """Method to add query_parameters to url"""
@@ -60,8 +75,8 @@ class UmbrellaReportingService:
 
         return return_dict
 
-    def get_report_for_user(self, identity_id: str) -> dict:
-        """Method to get report for user"""
+    def get_report_url(self, identity_id) -> str:
+        """Method to get report url"""
         url = self.__config.get_value('umbrella:urls:reports')
 
         url = url.replace('{organization_id}', self.__config.get_value(
@@ -75,14 +90,15 @@ class UmbrellaReportingService:
         categories_string = ''
         for category in query_categories:
             categories_string += f'{category},'
-
-        l = len(categories_string)
-        query_categories = categories_string[:l-1]
+        query_categories = categories_string[:-1]
         url += "&categories=" + query_categories
-
         url = url.replace('{query_categories}', query_categories)
-
         url += f"&identityids={identity_id}"
+        return url
+
+    def get_report_for_user(self, identity_id: str) -> dict:
+        """Method to get report for user"""
+        url = self.get_report_url(identity_id)
 
         headers = {'Authorization': 'Bearer ' + self.__api_report_token,
                    'Accept': 'application/json'}
