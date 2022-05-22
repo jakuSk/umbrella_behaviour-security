@@ -136,4 +136,4 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 
 
 ## TODOs:
-1. add radius ddl to docs
+1. add [radius ddl](https://wiki.freeradius.org/config/PostgreSQL-DDL-script) to docs

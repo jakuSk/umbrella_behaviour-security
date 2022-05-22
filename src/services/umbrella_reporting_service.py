@@ -16,7 +16,8 @@ class UmbrellaReportingService:
 
     def __get_token(self, config_service: ConfigService) -> str:
         """Method to get autorization token from auth api"""
-        key, secret = self.__get_secrets('umb_reporting_key', 'umb_reporting_secret')
+        key, secret = self.__get_secrets(
+            'umb_reporting_key', 'umb_reporting_secret')
         url = config_service.get_value('umbrella:urls:auth')
         headers = {'Accept': 'application/json'}
 
@@ -57,40 +58,51 @@ class UmbrellaReportingService:
     def get_identites(self) -> dict:
         """Method to get identities"""
         url = self.__config.get_value('umbrella:urls:identities')
-
         url = url.replace('{organization_id}', self.__config.get_value(
-            property_path='umbrella:identities:organization_id'))
-
+            'umbrella:identities:organization_id'))
         url += self.__add_query_string('umbrella:identities:query_parameters')
 
         headers = {'Authorization': 'Bearer ' + self.__api_report_token,
                    'Accept': 'application/json'}
 
-        response = requests.get(url, headers=headers).json()
+        response = requests.get(url, headers=headers)
+
+        # Check API call HTTP status_code
+        if response.status_code != 200:
+            print(
+                f'Non 200 status code - {response.status_code} on dns report api.')
+            print(response.json())
+            sys.exit(103)
+
+        response = response.json()
 
         return_dict = {}
 
+        # Save the identities in a dictionary with the label as key
         for user in response['data']:
             return_dict[user['identity']['label']] = user['identity']['id']
 
         return return_dict
 
+    def __get_query_categories(self, query_categories):
+        categories_string = ''
+        for category in query_categories:
+            categories_string += f'{category},'
+        query_categories = categories_string[:-1]
+        return query_categories
+
     def get_report_url(self, identity_id) -> str:
         """Method to get report url"""
         url = self.__config.get_value('umbrella:urls:reports')
-
         url = url.replace('{organization_id}', self.__config.get_value(
-            property_path='umbrella:reports:organization_id'))
-
+            'umbrella:reports:organization_id'))
         url += self.__add_query_string('umbrella:reports:query_parameters')
 
         query_categories = self.__config.get_value(
             'umbrella:reports:query_categories')
 
-        categories_string = ''
-        for category in query_categories:
-            categories_string += f'{category},'
-        query_categories = categories_string[:-1]
+        query_categories = self.__get_query_categories(query_categories)
+        
         url += "&categories=" + query_categories
         url = url.replace('{query_categories}', query_categories)
         url += f"&identityids={identity_id}"
@@ -122,14 +134,6 @@ class UmbrellaReportingService:
             return_dict[dns_log['domain']] = None
 
         return return_dict
-
-    def __is_id_on_list(self, id: int, list_to_search: list) -> bool:
-        """Simple method to iterate through the list and find a matching ID. Here it is used to find if dns query fits our category"""
-        for id_on_list in list_to_search:
-            if id_on_list == id:
-                return True
-
-        return False
 
     def get_investigate_data(self, domain: str) -> dict:
         """Get data from Investigate API. Returns dict with risk_score value"""
