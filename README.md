@@ -45,6 +45,8 @@ This application has been teseted with PostgreSQL 12.
 
 1. `umb_reporting_key` - Generated key for umbrella reporting
 1. `umb_reporting_secret` - Generated secret for umbrella reporting
+1. `umb_investigate_token` - Generated token for umbrella investigate
+
 1. `db_pass` - Database password
 
 #### Load umbrella key and secret stored in sysenv
@@ -117,4 +119,3 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 
 
 ## TODOs:
-1. add [radius ddl](https://wiki.freeradius.org/config/PostgreSQL-DDL-script) to docs

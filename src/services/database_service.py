@@ -5,7 +5,7 @@ from services.config_service import ConfigService
 
 
 class DatabaseService:
-    """Class to managa data from database"""
+    """Class to manage data from database"""
 
     def __init__(self, config_service: ConfigService):
         self.__config = config_service
