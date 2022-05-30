@@ -75,20 +75,20 @@ Security categories can be obtained from `help_script/get_categories.py`
 
 | id  | label                         |
 | --- | ----------------------------- |
-| 65  | Command and Control           |
-| 62  | Mobile Threats                |
-| 110 | DNS Tunneling VPN             |
 | 60  | Drive-by Downloads/Exploits   |
+| 61  | Dynamic DNS                   |
+| 62  | Mobile Threats                |
+| 63  | High Risk Sites and Locations |
+| 64  | Command and Control           |
+| 65  | Command and Control           |
+| 66  | Malware                       |
+| 67  | Malware                       |
+| 68  | Phishing                      |
 | 106 | Unauthorized IP Tunnel Access |
 | 108 | Newly Seen Domains            |
 | 109 | Potentially Harmful           |
+| 110 | DNS Tunneling VPN             |
 | 150 | Cryptomining                  |
-| 61  | Dynamic DNS                   |
-| 64  | Command and Control           |
-| 66  | Malware                       |
-| 68  | Phishing                      |
-| 67  | Malware                       |
-| 63  | High Risk Sites and Locations |
 
 ### Calculate risk score
 
@@ -114,7 +114,3 @@ If a user is misbehaving, we can add him to whitelist. Default expiration is 30 
 | 100       | unknown exceptions              |
 | 101       | failed to obtain bearer token   |
 | 102       | Non 2XX status code on API call |
-
-
-
-## TODOs:
