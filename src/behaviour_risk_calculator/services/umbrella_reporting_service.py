@@ -122,6 +122,7 @@ class UmbrellaReportingService:
             print(response.json())
             sys.exit(102)
 
+        print(response.json())
         return response.json()
 
     def process_dns_queries(self, report_data: dict, ) -> dict:
@@ -154,5 +155,5 @@ class UmbrellaReportingService:
 
         # Here we add the risk_score for the domain into out return_dict
         return_dict['risk_score'] = response.json()['risk_score']
-
+        
         return return_dict
